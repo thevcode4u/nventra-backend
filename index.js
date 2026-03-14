@@ -45,6 +45,17 @@ app.get('/', (req, res) => {
     res.send('Inventra API is running...');
 });
 
+app.get('/api/health', (req, res) => {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+    res.json({
+        status: 'Server is up',
+        database: dbStatus,
+        env_mongodb_uri: process.env.MONGODB_URI ? 'Defined' : 'UNDEFINED',
+        env_jwt_secret: process.env.JWT_SECRET ? 'Defined' : 'UNDEFINED',
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
