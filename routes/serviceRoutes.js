@@ -13,8 +13,18 @@ const upload = multer({ storage });
 
 router.get('/', async (req, res) => {
     try {
-        const services = await Service.find().sort({ order: 1 });
+        const query = req.query.category ? { category: req.query.category } : {};
+        const services = await Service.find(query).sort({ order: 1 });
         res.json(services);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const service = await Service.findById(req.params.id);
+        res.json(service);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -24,12 +34,31 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     const service = new Service({
         title: req.body.title,
         description: req.body.description,
+        category: req.body.category,
         icon: req.body.icon,
         image: req.file ? `/uploads/${req.file.filename}` : null
     });
     try {
         const newService = await service.save();
         res.status(201).json(newService);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.put('/:id', auth, upload.single('image'), async (req, res) => {
+    try {
+        const updateData = {
+            title: req.body.title,
+            description: req.body.description,
+            category: req.body.category,
+            icon: req.body.icon
+        };
+        if (req.file) {
+            updateData.image = `/uploads/${req.file.filename}`;
+        }
+        const updatedService = await Service.findByIdAndUpdate(req.params.id, updateData, { new: true });
+        res.json(updatedService);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
