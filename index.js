@@ -42,7 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Inventra API is running...');
+    res.send('inventra API is running...');
 });
 
 app.get('/api/health', (req, res) => {
